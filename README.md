@@ -58,7 +58,7 @@ To ensure seamless communication and compatibility with the TurtleBot3 Waffle Pi
 #### Operating System:
    Your PC must be running **Ubuntu 22.04 LTS Desktop**.
    - **Why it's needed:** Ubuntu 22.04 LTS is the officially supported operating system for **ROS 2 Humble Hawksbill**. This specific ROS 2 distribution is crucial because it will also be installed on the TurtleBot3's onboard computer (Raspberry Pi). For compatible communication, they must have the same ROS 2 distribution.
-   - **How to install:** If you don't already have Ubuntu 22.04 LTS installed refer to [Ubuntu installation guide]([https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview](https://documentation.ubuntu.com/desktop/en/latest/tutorial/install-ubuntu-desktop/)) you may erase the disk or use [dual-boot option](https://documentation.ubuntu.com/desktop/en/latest/tutorial/install-ubuntu-desktop/#installing-ubuntu-alongside-another-operating-system). For the [64-bit PC (AMD64) desktop image](https://releases.ubuntu.com/22.04/ubuntu-22.04.5-desktop-amd64.iso)
+   - **How to install:** If you don't already have Ubuntu 22.04 LTS installed refer to [Ubuntu installation guide](https://documentation.ubuntu.com/desktop/en/latest/tutorial/install-ubuntu-desktop/) you may erase the disk or use [dual-boot option](https://documentation.ubuntu.com/desktop/en/latest/tutorial/install-ubuntu-desktop/#installing-ubuntu-alongside-another-operating-system). For the [64-bit PC (AMD64) desktop image](https://releases.ubuntu.com/22.04/ubuntu-22.04.5-desktop-amd64.iso)
     
 #### ROS 2 Distribution
 You will need to install **ROS 2 Humble Hawksbill** on your Ubuntu 22.04 PC.
@@ -252,7 +252,7 @@ systemctl mask systemd-networkd-wait-online.service
 
 # Disable Suspend and Hibernation
 sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target
-# Reboot for changes to take affect
+# Reboot for changes to take effect
 sudo reboot
 ```
 When it comes back up, it is time to install ROS 2 on the TurtleBot itself. It is almost the same process as installing ROS on your laptop, except now we install `ros-base` instead of desktop.
@@ -340,7 +340,7 @@ sudo apt-get install -y libc6:armhf
 
 # Configure upload parameters
 export OPENCR_PORT=/dev/ttyACM0  
-export OPENCR_MODEL=waffle # Waflle Pi uses waffle model for openCR
+export OPENCR_MODEL=waffle # Waffle Pi uses waffle model for OpenCR
 rm -rf ./opencr_update.tar.bz2  
 # Download the firmware and required loader, then extract the file to prepare for upload
 wget https://github.com/ROBOTIS-GIT/OpenCR-Binaries/raw/master/turtlebot3/ROS2/latest/opencr_update.tar.bz2   
