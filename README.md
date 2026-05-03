@@ -465,7 +465,7 @@ The following is a breakdown of the Linux commands run throughout this tutorial,
 * **`nmcli`**: **N**etwork**M**anager **C**ommand **L**ine **I**nterface. A tool to create, display, and edit network connections (used here to configure the USB Ethernet connection).
 * **`udevadm`**: A tool to manage `udev` (device manager). Used to reload rules and trigger the system to recognize newly plugged-in hardware (like the OpenCR board) without rebooting.
 
-#### Text Processing and Building (Advanced)
+#### Text Processing
 * **`printf`**: Similar to `echo`, but allows for complex text formatting (like adding new lines with `\n`).
 * **`tee`**: Reads from standard input and writes to standard output and files simultaneously. Used here to write text into system files that require `sudo` privileges.
 * **`grep` / `awk`**: Powerful text-processing tools used in sequence to search through a block of text (`grep`) and extract specific columns or pieces of data (`awk`).
