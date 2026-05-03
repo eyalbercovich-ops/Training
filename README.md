@@ -360,3 +360,116 @@ Your printed assembly manual is likely outdated and refers to old parts such as 
 2. Press and hold `PUSH SW 1` for a few seconds to command the robot to move 30 centimeters (about 12 inches) forward.
 3. Press and hold `PUSH SW 2` for a few seconds to command the robot to rotate 180 degrees in place.
 ![OpenCR](images/opencr_models.png)
+
+---
+## 4. Operation
+
+### Bringup
+Before running any high-level nodes, you must start the bringup node on the TurtleBot3. This step is critical because it establishes communication with the OpenCR board, which handles low-level motor control and sensor communication. It acts as the direct interface between the Raspberry Pi (the Single Board Computer) and the physical robot hardware.
+
+###### 🤖 Run on TurtleBot3
+```bash
+ros2 launch turtlebot3_bringup robot.launch.py
+```
+
+### SLAM (Mapping)
+SLAM allows the robot to build a map of its environment. It solves the computational problem of constructing a map of an unknown environment while simultaneously keeping track of the robot's location within it. 
+
+###### 💻 Run on Laptop
+```bash
+# Launch SLAM node (Cartographer)
+ros2 launch turtlebot3_cartographer cartographer.launch.py
+```
+* **Explanation:** This command initializes Cartographer, the real-time SLAM library that uses incoming sensor data from the Laser Distance Sensor (LiDAR) and the IMU to build a consistent map. 
+
+###### 💻 Run on Laptop (New Terminal)
+```bash
+# Run teleop to move the robot and explore
+ros2 run turtlebot3_teleop teleop_keyboard
+```
+* **Explanation:** Because the TurtleBot3 relies on its 360° LDS sensor to measure distances to surrounding objects, you must manually drive the robot through the environment to map it. Teleop allows you to use your keyboard to expose the robot's sensors to unknown areas until the layout is fully mapped.
+
+#### Saving the Map
+Once you are satisfied with the map, save it to a file. 
+
+###### 💻 Run on Laptop
+```bash
+ros2 run nav2_map_server map_saver_cli -f ~/map
+```
+* **Explanation:** By default, the map exists only in the active SLAM session. This command saves the completed layout so it can be provided to the navigation framework later, preventing the robot from having to relearn its environment every time it reboots.
+
+### Navigation
+Once a map is created, you can navigate the robot to specific locations. Navigation is the process by which the robot plans and executes paths to move from a starting point to a goal point while avoiding obstacles.
+
+###### 💻 Run on Laptop
+```bash
+# Launch Navigation2
+ros2 launch turtlebot3_navigation2 navigation2.launch.py map:=$HOME/map.yaml
+```
+* **Explanation:** This launches the Navigation2 stack, loading your previously saved map. Navigation2 provides the tools required for both global path planning (finding the overall route) and local path planning (making immediate adjustments).
+
+#### RViz2 Interaction
+You will monitor the robot's progress using RViz2, a 3D visualization tool that allows you to view sensor data, maps, and path plans.
+
+1. **2D Pose Estimate:** Click the button in RViz and drag the arrow on the map to match the robot's real-world position and orientation. 
+   * **Explanation:** Without initial localization, the robot would be "lost" and unable to navigate purposefully. This step gives the robot its starting coordinates on the map.
+2. **Navigation2 Goal:** Click the button and drag an arrow on the map to set a destination. 
+   * **Explanation:** The robot will plan a path and move automatically. As it executes this path, it uses its sensors to continuously perform local path planning, avoiding any unexpected obstacles in real-time.
+## Appendix: Linux for Beginners
+
+### Overview
+Working with ROS 2 and the TurtleBot3 requires interacting with the Linux command line (terminal). While a graphical interface is familiar, the terminal gives you precise, powerful control over the system, software packages, and the robot itself. If you are new to Linux, the command line can feel intimidating, but it is built on logical, repeatable commands. 
+
+### Getting Help in Linux
+Before diving into specific commands, the most important skill to learn is how to ask Linux for help. You don't need to memorize every command and its options; you just need to know how to look them up.
+
+* **`--help` (Quick Reference):** Most Linux commands come with a built-in quick reference. Simply append `--help` or `-h` to a command to see a summary of how to use it and its available options.
+    * *Example:* `mkdir --help`
+* **`man` (Manual Pages):** This is the comprehensive manual for a command. It opens a detailed document explaining the command's purpose, syntax, and every possible option. (Press `q` to exit the manual).
+    * *Example:* `man apt`
+* **`man -k` (Keyword Search):** If you know what you want to do but don't know the exact command, you can search the manuals by keyword. It will list all commands whose descriptions contain that keyword.
+    * *Example:* `man -k network`
+
+---
+
+### Commands Used in This Tutorial
+The following is a breakdown of the Linux commands run throughout this tutorial, along with short explanations of what they do.
+
+#### File and Directory Navigation
+* **`cd`**: **C**hange **D**irectory. Moves you from your current folder into a new one (e.g., `cd ~/turtlebot3_ws`).
+* **`mkdir`**: **M**a**k**e **Dir**ectory. Creates a new folder. The `-p` flag tells it to also create any necessary parent folders that don't exist yet (e.g., `mkdir -p ~/turtlebot3_ws/src`).
+* **`rm`**: **R**e**m**ove. Deletes files or directories. The `-r` flag means "recursive" (used for deleting folders and their contents), and `-f` means "force" (don't ask for confirmation).
+* **`cp`**: **C**o**p**y. Copies a file or directory from one location to another.
+
+#### System and Package Management
+* **`sudo`**: **S**uper**u**ser **do**. Runs the command with administrative (root) privileges. You will use this whenever you are installing software or modifying system files.
+* **`apt`**: **A**dvanced **P**ackage **T**ool. Ubuntu's primary tool for managing software. Used with `update` (to refresh the list of available software), `upgrade` (to update installed software), and `install` (to download and install new software).
+* **`dpkg`**: The underlying Debian package manager. Used here with `-i` to install a specific downloaded `.deb` file directly.
+* **`add-apt-repository`**: Adds a new external software source (repository) to your system so `apt` can download packages from it.
+* **`systemctl`**: Used to control the `systemd` system and service manager. In this tutorial, it's used with `mask` to completely disable background services like sleep and hibernation.
+* **`reboot`**: Safely restarts the computer.
+
+#### Environment and Terminal Configuration
+* **`echo`**: Prints text to the terminal. When combined with `>>`, it appends that text to the end of a file (used here to add configurations to `~/.bashrc`).
+* **`export`**: Sets an environment variable. This tells the system or specific programs (like ROS 2) how to behave or where to find things (e.g., setting the `ROS_DOMAIN_ID`).
+* **`source`**: Reads and executes commands from a file in the current terminal session. Used to apply changes made to your `.bashrc` file immediately without needing to open a new terminal window.
+* **`locale-gen` / `update-locale`**: Generates and sets system language and character encoding settings (ensuring ROS 2 displays characters correctly).
+
+#### Downloading and Extracting
+* **`git`**: A version control system. Used here with the `clone` command to download open-source code repositories directly from GitHub.
+* **`curl` / `wget`**: Command-line tools for downloading files directly from the internet via URLs.
+* **`tar`**: An archiving utility (like zip). Used with `-xvf` to e**x**tract, **v**isually display progress, from a **f**ile.
+
+#### Network and Hardware Management
+* **`ip`**: A tool for managing and displaying network interfaces and routing. Used to view (`ip link show`) or verify (`ip n`) network connections.
+* **`nmcli`**: **N**etwork**M**anager **C**ommand **L**ine **I**nterface. A tool to create, display, and edit network connections (used here to configure the USB Ethernet connection).
+* **`udevadm`**: A tool to manage `udev` (device manager). Used to reload rules and trigger the system to recognize newly plugged-in hardware (like the OpenCR board) without rebooting.
+
+#### Text Processing and Building (Advanced)
+* **`printf`**: Similar to `echo`, but allows for complex text formatting (like adding new lines with `\n`).
+* **`tee`**: Reads from standard input and writes to standard output and files simultaneously. Used here to write text into system files that require `sudo` privileges.
+* **`grep` / `awk`**: Powerful text-processing tools used in sequence to search through a block of text (`grep`) and extract specific columns or pieces of data (`awk`).
+
+#### ROS-Specific Commands
+* **`ros2`**: The main command for interacting with the Robot Operating System. Used to `launch` complex setups, `run` individual nodes, or find `pkg prefix` (the installation path of a package).
+* **`colcon`**: The build tool specifically used for ROS 2. It compiles the source code you downloaded into executable programs.
