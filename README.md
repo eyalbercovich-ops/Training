@@ -232,8 +232,8 @@ Then create a shared connection profile:
 ###### 💻 Run on Laptop
 ```bash
 # Replace <INTERFACE_NAME> with the interface you identified above
-sudo nmcli connection add type ethernet ifname <INTERFACE_NAME> con-name pi-usb ipv4.method shared
-sudo nmcli connection up pi-usb
+nmcli connection add type ethernet ifname <INTERFACE_NAME> con-name pi-usb ipv4.method shared
+nmcli connection up pi-usb
 
 # Verify the connection
 ip n  # Should show the interface as REACHABLE
